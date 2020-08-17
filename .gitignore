@@ -5,3 +5,4 @@ shared/
 *.box
 *.log
 .update-iso-metadata-cookie
+.vagrant-cloud-token

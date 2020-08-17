@@ -1,0 +1,23 @@
+{
+  "builders": [
+    {
+      "type": "null",
+      "communicator": "none"
+    }
+  ],
+  "post-processors": [
+    [
+      {
+        "type": "artifice",
+        "files": ["proxmox-ve-amd64-virtualbox.box"],
+        "keep_input_artifact": false
+      },
+      {
+        "type": "vagrant-cloud",
+        "box_tag": "anarchotechnyc/proxmox-ve",
+        "version": "20200816.0.0",
+        "no_release": true
+      }
+    ]
+  ]
+}

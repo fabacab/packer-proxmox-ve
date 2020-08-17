@@ -1,5 +1,6 @@
 help:
-	@echo type make build-libvirt or make build-virtualbox
+	@echo type make build-libvirt or make build-virtualbox \
+		or make vagrant-cloud
 
 build-libvirt: proxmox-ve-amd64-libvirt.box
 
@@ -24,4 +25,10 @@ proxmox-ve-amd64-virtualbox.box: *.sh proxmox-ve.json Vagrantfile.template
 clean:
 	rm -rf packer_cache output-proxmox-ve*
 
-.PHONY: help build-libvirt build-virtualbox clean
+.PHONY: help build-libvirt build-virtualbox clean \
+	vagrant-cloud proxmox-ve-vagrant-cloud
+
+vagrant-cloud: build-virtualbox proxmox-ve-vagrant-cloud
+
+proxmox-ve-vagrant-cloud: proxmox-ve-amd64-virtualbox.box proxmox-ve-vagrant-cloud.json
+	VAGRANT_CLOUD_TOKEN=$$(cat .vagrant-cloud-token) packer build proxmox-ve-vagrant-cloud.json
