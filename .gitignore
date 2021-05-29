@@ -2,7 +2,9 @@
 packer_cache/
 output-*/
 shared/
+tmp/
 *.box
 *.log
 .update-iso-metadata-cookie
 .vagrant-cloud-token
+secrets*

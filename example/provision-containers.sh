@@ -10,24 +10,25 @@ pveam update
 pveam available # show templates.
 
 # create and start two alpine-linux containers.
-pve_template=alpine-3.11-default_20200425_amd64.tar.xz
+pve_template=alpine-3.12-default_20200823_amd64.tar.xz
 pveam download local $pve_template
 for pve_id in 100 101; do
     pve_ip=$(echo $ip | sed -E "s,\.[0-9]+\$,.$pve_id,")
-    pve_disk_size=128M
+    pve_disk_size=512M
     pvesm alloc local-lvm $pve_id vm-$pve_id-disk-1 $pve_disk_size
     pvesm status # show status.
     mkfs.ext4 $(pvesm path local-lvm:vm-$pve_id-disk-1)
     pct create $pve_id \
         local:vztmpl/$pve_template \
-        -onboot 1 \
-        -ostype alpine \
-        -hostname alpine-$pve_id \
-        -cores 1 \
-        -memory 128 \
-        -swap 0 \
-        -rootfs local-lvm:vm-$pve_id-disk-1,size=$pve_disk_size \
-        -net0 name=eth0,bridge=vmbr0,gw=$ip,ip=$pve_ip/24
+        --unprivileged 0 \
+        --onboot 1 \
+        --ostype alpine \
+        --hostname alpine-$pve_id \
+        --cores 1 \
+        --memory 128 \
+        --swap 0 \
+        --rootfs local-lvm:vm-$pve_id-disk-1,size=$pve_disk_size \
+        --net0 name=eth0,bridge=vmbr0,gw=$ip,ip=$pve_ip/24
     pct config $pve_id # show config.
     pct start $pve_id
     pct exec $pve_id sh <<EOF

@@ -1,8 +1,10 @@
 {
   "variables": {
     "disk_size": "15375",
-    "iso_url": "http://download.proxmox.com/iso/proxmox-ve_6.2-1.iso",
-    "iso_checksum": "sha256:d8fb3cfba19d38aa0c05452a954150f96e3ee455a36d52427aa26e6906fb8bff"
+    "iso_url": "http://download.proxmox.com/iso/proxmox-ve_6.4-1.iso",
+    "iso_checksum": "sha256:ab71b03057fdeea29804f96f0ff4483203b8c7a25957a4f69ed0002b5f34e607",
+    "hyperv_switch_name": "{{env `HYPERV_SWITCH_NAME`}}",
+    "hyperv_vlan_id": "{{env `HYPERV_VLAN_ID`}}"
   },
   "builders": [
     {
@@ -28,7 +30,7 @@
       "boot_wait": "5s",
       "boot_command": [
         "<enter>",
-        "<wait10><wait10><wait10><wait10><wait10>",
+        "<wait1m>",
         "<enter><wait>",
         "<enter><wait>",
         "United S<wait>t<wait>a<wait>t<wait>e<wait>s<wait><enter><wait><tab><wait>",
@@ -48,12 +50,7 @@
         "<tab><wait>",
         "<tab><wait>",
         "<enter><wait5>",
-        "<enter><wait5>",
-        "<wait10><wait10><wait10><wait10><wait10><wait10>",
-        "<wait10><wait10><wait10><wait10><wait10><wait10>",
-        "<wait10><wait10><wait10><wait10><wait10><wait10>",
-        "<wait10><wait10><wait10><wait10><wait10><wait10>",
-        "<enter>"
+        "<enter><wait5>"
       ],
       "shutdown_command": "poweroff"
     },
@@ -66,6 +63,7 @@
       "vboxmanage": [
         ["modifyvm", "{{.Name}}", "--memory", "2048"],
         ["modifyvm", "{{.Name}}", "--cpus", "2"],
+        ["modifyvm", "{{.Name}}", "--nested-hw-virt", "on"],
         ["modifyvm", "{{.Name}}", "--vram", "16"],
         ["modifyvm", "{{.Name}}", "--graphicscontroller", "vmsvga"],
         ["modifyvm", "{{.Name}}", "--audio", "none"],
@@ -88,8 +86,54 @@
       "boot_wait": "5s",
       "boot_command": [
         "<enter>",
-        "<wait10><wait10><wait10><wait10><wait10>",
+        "<wait1m>",
         "<enter><wait>",
+        "<enter><wait>",
+        "United S<wait>t<wait>a<wait>t<wait>e<wait>s<wait><enter><wait><tab><wait>",
+        "<tab><wait>",
+        "<tab><wait>",
+        "<tab><wait>",
+        "<enter><wait5>",
+        "vagrant<tab><wait>",
+        "vagrant<tab><wait>",
+        "pve@example.com<tab><wait>",
+        "<tab><wait>",
+        "<enter><wait5>",
+        "pve.example.com<tab><wait>",
+        "<tab><wait>",
+        "<tab><wait>",
+        "<tab><wait>",
+        "<tab><wait>",
+        "<tab><wait>",
+        "<enter><wait5>",
+        "<enter><wait5>"
+      ],
+      "shutdown_command": "poweroff"
+    },
+    {
+      "name": "proxmox-ve-amd64-hyperv",
+      "type": "hyperv-iso",
+      "temp_path": "tmp",
+      "headless": true,
+      "generation": 2,
+      "enable_virtualization_extensions": true,
+      "enable_mac_spoofing": true,
+      "cpus": 2,
+      "memory": 2048,
+      "switch_name": "{{user `hyperv_switch_name`}}",
+      "vlan_id": "{{user `hyperv_vlan_id`}}",
+      "disk_size": "{{user `disk_size`}}",
+      "iso_url": "{{user `iso_url`}}",
+      "iso_checksum": "{{user `iso_checksum`}}",
+      "ssh_username": "root",
+      "ssh_password": "vagrant",
+      "ssh_timeout": "60m",
+      "first_boot_device": "DVD",
+      "boot_order": ["SCSI:0:0"],
+      "boot_wait": "5s",
+      "boot_command": [
+        "<enter>",
+        "<wait1m>",
         "<enter><wait>",
         "<enter><wait>",
         "United S<wait>t<wait>a<wait>t<wait>e<wait>s<wait><enter><wait><tab><wait>",
@@ -110,11 +154,15 @@
         "<tab><wait>",
         "<enter><wait5>",
         "<enter><wait5>",
-        "<wait10><wait10><wait10><wait10><wait10><wait10>",
-        "<wait10><wait10><wait10><wait10><wait10><wait10>",
-        "<wait10><wait10><wait10><wait10><wait10><wait10>",
-        "<wait10><wait10><wait10><wait10><wait10><wait10>",
-        "<enter>"
+        "<wait4m>",
+        "root<enter>",
+        "<wait5>",
+        "vagrant<enter>",
+        "<wait5>",
+        "rm -f /etc/apt/sources.list.d/pve-enterprise.list<enter>",
+        "apt-get update<enter>",
+        "<wait1m>",
+        "apt-get install -y hyperv-daemons<enter>"
       ],
       "shutdown_command": "poweroff"
     }
