@@ -37,7 +37,8 @@ clean:
 vagrant-cloud: build-virtualbox proxmox-ve-vagrant-cloud
 
 proxmox-ve-vagrant-cloud: proxmox-ve-amd64-virtualbox.box proxmox-ve-vagrant-cloud.json
-	VAGRANT_CLOUD_TOKEN=$$(cat .vagrant-cloud-token) packer build proxmox-ve-vagrant-cloud.json
+	VAGRANT_CLOUD_TOKEN=$$(cat .vagrant-cloud-token) \
+		packer build -var "box_version_major=$$(date +%Y%m%d)" proxmox-ve-vagrant-cloud.json
 
 .PHONY: help build-libvirt build-virtualbox build-hyperv clean \
 	vagrant-cloud proxmox-ve-vagrant-cloud

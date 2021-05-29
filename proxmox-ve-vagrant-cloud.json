@@ -1,4 +1,7 @@
 {
+  "variables": {
+    "box_version_major": ""
+  },
   "builders": [
     {
       "type": "null",
@@ -15,7 +18,7 @@
       {
         "type": "vagrant-cloud",
         "box_tag": "anarchotechnyc/proxmox-ve",
-        "version": "20200816.0.0",
+        "version": "{{user `box_version_major`}}.0.0",
         "no_release": true
       }
     ]
